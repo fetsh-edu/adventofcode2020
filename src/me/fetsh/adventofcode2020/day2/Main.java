@@ -4,28 +4,33 @@ import me.fetsh.adventofcode2020.utils.File;
 import java.io.IOException;
 import java.util.Arrays;
 
-public class Main {
-    public static void main(String[] args) throws IOException {
-        var policyLines = File.readAllBytes(Main.class.getResource("input.txt").getPath()).split("\n");
-        var passwordsWithPolicies = Arrays.stream(policyLines).map(s -> s.split(":\s+|-|\s+")).toArray(String[][]::new);
+class PolicyWithPassword {
+    public int int1;
+    public int int2;
+    public char _char;
+    public String password;
 
-        System.out.println(Arrays.stream(passwordsWithPolicies).filter(Main::passwordValid1).count());
-        System.out.println(Arrays.stream(passwordsWithPolicies).filter(Main::passwordValid2).count());
+    public PolicyWithPassword(String[] ary) {
+        this.int1 = Integer.parseInt(ary[0]);
+        this.int2 = Integer.parseInt(ary[1]);
+        this._char = ary[2].charAt(0);
+        this.password = ary[3];
     }
-
-    public static Boolean passwordValid1(String[] passEnt){
-        var sAry = passEnt[3].split("");
-        long occurrences = Arrays.stream(sAry).filter(s -> s.equals(passEnt[2])).count();
-        return occurrences >= Integer.parseInt(passEnt[0]) && occurrences <= Integer.parseInt(passEnt[1]);
+    public Boolean valid1() {
+        long occurrences = password.chars().filter(s -> s == _char).count();
+        return occurrences >= int1 && occurrences <= int2;
     }
-    public static Boolean passwordValid2(String[] passEnt) {
-        var sAry = passEnt[3].split("");
-        return sAry[Integer.parseInt(passEnt[0]) - 1].equals(passEnt[2]) ^ sAry[Integer.parseInt(passEnt[1]) - 1].equals(passEnt[2]);
+    public Boolean valid2() {
+        return password.charAt(int1 - 1) == _char ^ password.charAt(int2 - 1) == _char;
     }
 }
 
+public class Main {
+    public static void main(String[] args) throws IOException {
+        var policyLines = File.readAllBytes(Main.class.getResource("input.txt").getPath()).split("\n");
+        var policyWithPasswords = Arrays.stream(policyLines).map(s -> new PolicyWithPassword(s.split(":\s+|-|\s+"))).toArray(PolicyWithPassword[]::new);
 
-
-//        var charAry = passEnt[3].chars();
-//        int testChar = Character.getNumericValue(passEnt[2].charAt(0));
-//        long occurrences = charAry.filter(s -> Character.getNumericValue(s) == testChar).count();
+        System.out.println(Arrays.stream(policyWithPasswords).filter(PolicyWithPassword::valid1).count());
+        System.out.println(Arrays.stream(policyWithPasswords).filter(PolicyWithPassword::valid2).count());
+    }
+}
