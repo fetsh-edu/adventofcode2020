@@ -5,10 +5,10 @@ import java.io.IOException;
 import java.util.Arrays;
 
 class PolicyWithPassword {
-    public int int1;
-    public int int2;
-    public char _char;
-    public String password;
+    private final int int1;
+    private final int int2;
+    private final char _char;
+    private final String password;
 
     public PolicyWithPassword(String[] ary) {
         this.int1 = Integer.parseInt(ary[0]);
