@@ -1,14 +1,23 @@
 package me.fetsh.adventofcode2020.day3;
 
-import java.util.AbstractMap;
 import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 
 public class Forest {
 
+    static class Pair {
+        public final int index;
+        public final String line;
+        public Pair(int index, String line) {
+            this.index = index;
+            this.line = line;
+        }
+    }
+
+
     static char charAt(String string, int position) {
-        return (char) Stream.generate(string::chars).flatMapToInt(s -> s).skip(position).findFirst().getAsInt();
+        return string.charAt(position % string.length());
     }
 
     public static String[] everyNth(String[] ary, int n) {
@@ -21,11 +30,11 @@ public class Forest {
 
     public static long treesEncountered(String forestString, int initDown, int initRight, int down, int right){
         var filteredForest = everyNth(forestString.split("\n"), down);
-        var indexedForest = IntStream.range(0, filteredForest.length).mapToObj(i -> new AbstractMap.SimpleEntry<Integer, String>(i, filteredForest[i])).toArray(AbstractMap.SimpleEntry[]::new);
+        var indexedForest = IntStream.range(0, filteredForest.length).mapToObj(i -> new Pair(i, filteredForest[i])).toArray(Pair[]::new);
 
         return Arrays.stream(indexedForest)
                 .skip(initDown - 1)
-                .map(s -> charAt((String) s.getValue(), initRight + (int) s.getKey() * right - 1))
+                .map(s -> charAt(s.line, initRight + s.index * right - 1))
                 .filter(s -> s == '#').count();
     }
 }
