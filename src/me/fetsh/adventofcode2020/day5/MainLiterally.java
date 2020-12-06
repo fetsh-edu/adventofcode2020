@@ -28,8 +28,10 @@ public class MainLiterally {
     }
 
     public static int seatId(String pass){
-        var row = Arrays.stream(pass.substring(0, 7).split("")).reduce(new Range(0,127), Range::apply, (b,c) -> b).min;
-        var seat = Arrays.stream(pass.substring(7).split("")).reduce(new Range(0,7), Range::apply, (b,c) -> b).min;
+        var row = Arrays.stream(pass.substring(0, 7).split(""))
+                .reduce(new Range(0,127), Range::apply, (b,c) -> b).min;
+        var seat = Arrays.stream(pass.substring(7).split(""))
+                .reduce(new Range(0,7), Range::apply, (b,c) -> b).min;
         return row * 8 + seat;
     }
 }

@@ -27,6 +27,9 @@ public class MainWithNumbersMagick {
     }
 
     public static int seatId(String pass) {
-        return Integer.parseInt(pass.replaceAll("[FL]", "0").replaceAll("[BR]", "1"), 2);
+        return Integer.parseInt(
+                pass.replaceAll("[FL]", "0")
+                    .replaceAll("[BR]", "1"),
+                2);
     }
 }
