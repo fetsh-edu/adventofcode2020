@@ -7,7 +7,7 @@ import java.util.*;
 import java.util.function.BiFunction;
 import java.util.stream.IntStream;
 
-record Instruction(String instruction, boolean fixed){
+record Instruction(String instruction){
     private static final Map<String, BiFunction<Integer, Integer, Integer>> accFunction = new HashMap<>();
     private static final Map<String, BiFunction<Integer, Integer, Integer>> indFunction = new HashMap<>();
     static {
@@ -21,10 +21,14 @@ record Instruction(String instruction, boolean fixed){
     int acc(int init) { return accFunction.get(cmd()).apply(init, value()); }
     int index(int init) { return indFunction.get(cmd()).apply(init, value()); }
     int value() { return Integer.parseInt(instruction.substring(4)); }
-    String cmd() {
-        if (!fixed) return instruction.substring(0,3);
-        if (instruction.startsWith("acc")) return "acc";
-        return instruction.startsWith("jmp") ? "nop" : "jmp";
+    String cmd() { return instruction.substring(0,3); }
+
+    Instruction flip(Boolean _flip){
+        if (!_flip) return this;
+        if (instruction.startsWith("acc")) return this;
+        return instruction.startsWith("jmp")
+                ? new Instruction(instruction.replace("jmp", "nop"))
+                : new Instruction(instruction.replace("nop", "jmp"));
     }
 }
 
@@ -49,7 +53,7 @@ public class Main {
     public static OptionalInt calcAccBeforeRepeating(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer acc){
         if (index > instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.of(acc);
-        var instruction = new Instruction(instructionLines[index], false);
+        var instruction = new Instruction(instructionLines[index]);
         return calcAccBeforeRepeating(instructionLines, visitedIndices, instruction.index(index), instruction.acc(acc));
     }
 
@@ -57,7 +61,7 @@ public class Main {
         if (index == instructionLines.length) return OptionalInt.of(acc);
         if (index > instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.empty();
-        var instruction = new Instruction(instructionLines[index], index.equals(indToFix));
+        var instruction = new Instruction(instructionLines[index]).flip(index.equals(indToFix));
         return calcSuccessfulAcc(instructionLines, visitedIndices, instruction.index(index), indToFix, instruction.acc(acc));
     }
 }
