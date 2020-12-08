@@ -50,14 +50,14 @@ public class Main {
                 .ifPresentOrElse(System.out::println, () -> System.out.println("Nope"));
     }
 
-    public static OptionalInt calcAccBeforeRepeating(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer acc){
-        if (index > instructionLines.length) return OptionalInt.empty();
+    static OptionalInt calcAccBeforeRepeating(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer acc){
+        if (index >= instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.of(acc);
         var instruction = new Instruction(instructionLines[index]);
         return calcAccBeforeRepeating(instructionLines, visitedIndices, instruction.index(index), instruction.acc(acc));
     }
 
-    public static OptionalInt calcSuccessfulAcc(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer indToFix, Integer acc){
+    static OptionalInt calcSuccessfulAcc(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer indToFix, Integer acc){
         if (index == instructionLines.length) return OptionalInt.of(acc);
         if (index > instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.empty();
