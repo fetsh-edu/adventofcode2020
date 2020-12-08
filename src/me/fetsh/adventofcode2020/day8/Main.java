@@ -5,8 +5,9 @@ import me.fetsh.adventofcode2020.utils.File;
 import java.io.IOException;
 import java.util.*;
 import java.util.function.BiFunction;
+import java.util.stream.IntStream;
 
-record Instruction(String instruction){
+record Instruction(String instruction, boolean fixed){
     private static final Map<String, BiFunction<Integer, Integer, Integer>> accFunction = new HashMap<>();
     private static final Map<String, BiFunction<Integer, Integer, Integer>> indFunction = new HashMap<>();
     static {
@@ -17,34 +18,46 @@ record Instruction(String instruction){
         indFunction.put("jmp", Integer::sum);
         indFunction.put("acc", (a, b) -> a + 1);
     }
-    int acc(int init){
-        return accFunction.get(instruction.substring(0,3)).apply(init, Integer.parseInt(instruction.substring(4)));
-    }
-    int index(int init){
-        return indFunction.get(instruction.substring(0,3)).apply(init, Integer.parseInt(instruction.substring(4)));
+    int acc(int init) { return accFunction.get(cmd()).apply(init, value()); }
+    int index(int init) { return indFunction.get(cmd()).apply(init, value()); }
+    int value() { return Integer.parseInt(instruction.substring(4)); }
+    String cmd() {
+        if (!fixed) return instruction.substring(0,3);
+        if (instruction.startsWith("acc")) return "acc";
+        return instruction.startsWith("jmp") ? "nop" : "jmp";
     }
 }
 
 public class Main {
     public static void main(String[] args) throws IOException {
         var instructionLines = File.readAllBytes(Main.class.getResource("input.txt").getPath()).split("\n");
-        
-        System.out.println(calcAccBeforeRepeating(instructionLines, new HashSet<>(), 0, 0));
-        System.out.println(calcAcc(instructionLines, new HashSet<>(), 0, 0));
+
+        // Part 1
+        calcAccBeforeRepeating(instructionLines, new HashSet<>(), 0, 0)
+                .ifPresentOrElse(System.out::println, () -> System.out.println("Nope"));
+
+        // Part 2
+        IntStream.range(0, instructionLines.length)
+                .filter(i -> !instructionLines[i].startsWith("acc"))
+                .mapToObj(i -> calcSuccessfulAcc(instructionLines, new HashSet<>(), 0, i,0))
+                .filter(OptionalInt::isPresent)
+                .map(OptionalInt::getAsInt)
+                .findFirst()
+                .ifPresentOrElse(System.out::println, () -> System.out.println("Nope"));
     }
 
     public static OptionalInt calcAccBeforeRepeating(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer acc){
         if (index > instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.of(acc);
-        var instruction = new Instruction(instructionLines[index]);
+        var instruction = new Instruction(instructionLines[index], false);
         return calcAccBeforeRepeating(instructionLines, visitedIndices, instruction.index(index), instruction.acc(acc));
     }
 
-    public static OptionalInt calcAcc(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer acc){
+    public static OptionalInt calcSuccessfulAcc(String[] instructionLines, Set<Integer> visitedIndices, Integer index, Integer indToFix, Integer acc){
         if (index == instructionLines.length) return OptionalInt.of(acc);
         if (index > instructionLines.length) return OptionalInt.empty();
         if (!visitedIndices.add(index)) return OptionalInt.empty();
-        var instruction = new Instruction(instructionLines[index]);
-        return calcAcc(instructionLines, visitedIndices, instruction.index(index), instruction.acc(acc));
+        var instruction = new Instruction(instructionLines[index], index.equals(indToFix));
+        return calcSuccessfulAcc(instructionLines, visitedIndices, instruction.index(index), indToFix, instruction.acc(acc));
     }
 }
