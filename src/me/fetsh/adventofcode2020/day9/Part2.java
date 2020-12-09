@@ -1,8 +1,5 @@
 package me.fetsh.adventofcode2020.day9;
 
-import me.fetsh.adventofcode2020.day5.MainLiterally;
-import me.fetsh.adventofcode2020.utils.File;
-
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
