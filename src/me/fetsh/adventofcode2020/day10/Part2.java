@@ -25,7 +25,7 @@ public class Part2 {
                 ? 1L
                 : IntStream.rangeClosed(1, maxStep)
                 .filter(i -> index - i >= 0)
-                .filter(i -> input.get(index) - input.get(index - i) <= 3)
+                .filter(i -> input.get(index) - input.get(index - i) <= maxStep)
                 .mapToLong(i -> countPathsR(input, maxStep, index - i, cache)).sum();
         cache.put(index, result);
         return result;
