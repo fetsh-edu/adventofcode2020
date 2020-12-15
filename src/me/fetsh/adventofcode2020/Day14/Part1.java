@@ -8,7 +8,6 @@ import java.util.Scanner;
 public class Part1 {
     public static void main(String[] args) throws FileNotFoundException {
         var file = Part1.class.getResource("input.txt").getFile();
-//        var file = Part1.class.getResource("test_input.txt").getFile();
 
         HashMap<Integer, Long> memory = new HashMap<>();
         String mask = "";
