@@ -20,7 +20,7 @@ public class Part2 {
                 var address = Long.parseLong(splitLine[1]) | Long.parseLong(mask.replaceAll("X", "0"), 2);
                 var value = Long.parseLong(splitLine[2]);
                 var addresses = new ArrayList<Long>();
-                getAddresses(addresses, mask.chars().filter(c -> c == 'X').count(), 0, mask, address);
+                getAddresses(addresses, mask, address);
                 for (long a: addresses) {
                     memory.put(a, value);
                 }
@@ -30,15 +30,15 @@ public class Part2 {
         System.out.println(memory.values().stream().mapToLong(s -> s).sum());
     }
 
-    private static void getAddresses(ArrayList<Long> addresses, long xsCount, int xsInd, String mask, long address) {
-        if (xsInd == xsCount) {
+    private static void getAddresses(ArrayList<Long> addresses, String mask, long address) {
+        if (!mask.contains("X")) {
             addresses.add(address);
         } else {
             var ofXIndex = mask.indexOf("X");
             var addressString = String.format("%1$" + 36 + "s", Long.toBinaryString(address)).replace(' ', '0');
             var newMask = mask.replaceFirst("X", "Y");
-            getAddresses(addresses, xsCount, xsInd + 1, newMask , Long.parseLong(addressString.substring(0, ofXIndex) + "1" + addressString.substring(ofXIndex + 1), 2));
-            getAddresses(addresses, xsCount, xsInd + 1, newMask, Long.parseLong(addressString.substring(0, ofXIndex) + "0" + addressString.substring(ofXIndex + 1), 2));
+            getAddresses(addresses, newMask, Long.parseLong(addressString.substring(0, ofXIndex) + "1" + addressString.substring(ofXIndex + 1), 2));
+            getAddresses(addresses, newMask, Long.parseLong(addressString.substring(0, ofXIndex) + "0" + addressString.substring(ofXIndex + 1), 2));
         }
     }
 }
