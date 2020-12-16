@@ -6,36 +6,24 @@ import java.io.IOException;
 import java.util.*;
 import java.util.stream.Stream;
 
-class Range {
-    int min;
-    int max;
+record Range(int min, int max) {
     static Range parseRange(String string) {
-        var range = new Range();
-        range.min = Integer.parseInt(string.split("-")[0]);
-        range.max = Integer.parseInt(string.split("-")[1]);
-        return range;
+        return new Range(Integer.parseInt(string.split("-")[0]), Integer.parseInt(string.split("-")[1]));
     }
 
     Boolean contains(int value) {
         return value >= min && value <= max;
     }
-
-    @Override
-    public String toString() {
-        return "Range{min=" + min + ", max=" + max + '}';
-    }
 }
 
-class Rule {
-    String name;
-    Range[] ranges;
+record Rule(String name, Range[] ranges) {
     static Rule parseRule(String string){
-        var rule = new Rule();
-        rule.name = string.split(": ")[0];
-        rule.ranges = Arrays.stream(string.split(": ")[1].split(" or "))
-                .map(Range::parseRange)
-                .toArray(Range[]::new);
-        return rule;
+        return new Rule(
+                string.split(": ")[0],
+                Arrays.stream(string.split(": ")[1].split(" or "))
+                        .map(Range::parseRange)
+                        .toArray(Range[]::new)
+                );
     }
 
     Boolean validForFields(Stream<Integer> fields){
@@ -43,35 +31,21 @@ class Rule {
                 field -> Arrays.stream(ranges)
                         .anyMatch(range -> range.contains(field)));
     }
-
-    @Override
-    public String toString() {
-        return "Rule{field='" + name + '\'' + ", ranges=" + Arrays.toString(ranges) +'}';
-    }
 }
 
-class Ticket {
-    int[] fields;
+record Ticket(int[] fields) {
     static Ticket parseTicket(String string){
-        var ticket = new Ticket();
-        ticket.fields = Arrays.stream(string.split(",")).mapToInt(Integer::parseInt).toArray();
-        return ticket;
+        return new Ticket(Arrays.stream(string.split(",")).mapToInt(Integer::parseInt).toArray());
     }
     Boolean isValid(Rule[] rules){
         return Arrays.stream(fields)
                 .allMatch(
                         field -> Arrays.stream(rules)
-                                .flatMap(r -> Stream.of(r.ranges))
+                                .flatMap(r -> Stream.of(r.ranges()))
                                 .anyMatch(range -> range.contains(field))
                 );
     }
-
-    @Override
-    public String toString() {
-        return "Ticket{" +
-                "fields=" + Arrays.toString(fields) +
-                '}';
-    }
+    int get(int i){ return fields[i]; }
 }
 
 public class Part2 {
@@ -95,11 +69,11 @@ public class Part2 {
         HashMap<Integer, String> positions = new HashMap<>();
         Set<String> foundPositions = new HashSet<>();
 
-        for (int i = 0; i < validTickets[1].fields.length; i++) {
+        for (int i = 0; i < validTickets[1].fields().length; i++) {
             int finalI = i;
             var ruleNames = Arrays.stream(rules)
-                    .filter(rule -> rule.validForFields(Arrays.stream(validTickets).map(t -> t.fields[finalI])))
-                    .map(r -> r.name).toArray(String[]::new);
+                    .filter(rule -> rule.validForFields(Arrays.stream(validTickets).map(t -> t.get(finalI))))
+                    .map(Rule::name).toArray(String[]::new);
             possiblePositions.put(finalI, ruleNames);
         }
         possiblePositions
@@ -114,8 +88,7 @@ public class Part2 {
 
         var departureFields = positions.entrySet().stream().filter(e -> e.getValue().contains("departure")).mapToInt(Map.Entry::getKey);
 
-        var myDepartureFields = departureFields.mapToLong(i -> myTicket.fields[i]).reduce(1, (a, b) -> a * b);
+        var myDepartureFields = departureFields.mapToLong(myTicket::get).reduce(1, (a, b) -> a * b);
         System.out.println(myDepartureFields);
-
     }
 }
