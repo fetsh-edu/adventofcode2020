@@ -1,15 +1,12 @@
 package me.fetsh.adventofcode2020.Day17;
 
-import io.vavr.collection.HashSet;
 import io.vavr.collection.List;
-import io.vavr.collection.Set;
 import io.vavr.collection.Stream;
 import me.fetsh.adventofcode2020.utils.File;
 
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 public class Cubes {
     public static void main(String[] args) throws IOException {
@@ -20,15 +17,15 @@ public class Cubes {
 
         var initMap = List.of(input.split("\n")).map(s -> List.of(s.split("")));
 
-        var activeCubes = Stream.range(0, initMap.length())
+        var activeCubes = List.range(0, initMap.length())
                 .flatMap(x ->
-                        Stream.range(0, initMap.get(x).length())
+                        List.range(0, initMap.get(x).length())
                                 .filter(y -> initMap.get(x).get(y).equals("#"))
                                 .map(y -> List.of(x, y).appendAll(Stream.continually(0).take(dimensions - 2)))
                 ).toSet();
 
         for (int i = 0; i < steps; i++) {
-            Set<List<Integer>> finalActiveCubes = activeCubes;
+            var finalActiveCubes = activeCubes;
             var ncounter = new HashMap<List<Integer>, Integer>();
 
             activeCubes.forEach(cube -> List.of(-1,0, 1).crossProduct(dimensions)
@@ -37,14 +34,12 @@ public class Cubes {
                     .forEach(n -> ncounter.merge(n, 1, Integer::sum)));
 
             var remainsActive = activeCubes
-                    .filter(c -> List.of(2,3).contains(ncounter.get(c)))
-                    .toSet();
+                    .filter(c -> List.of(2,3).contains(ncounter.get(c)));
 
-            var becameActive = HashSet.ofAll(
-                    ncounter.entrySet().stream()
+            var becameActive = List.ofAll(ncounter.entrySet())
                             .filter(e -> !finalActiveCubes.contains(e.getKey()) && e.getValue() == 3)
                             .map(Map.Entry::getKey)
-                            .collect(Collectors.toSet()));
+                            .toSet();
 
             activeCubes = remainsActive.union(becameActive);
         }
