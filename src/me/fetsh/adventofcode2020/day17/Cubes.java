@@ -1,4 +1,4 @@
-package me.fetsh.adventofcode2020.Day17;
+package me.fetsh.adventofcode2020.day17;
 
 import io.vavr.collection.List;
 import io.vavr.collection.Stream;

@@ -1,4 +1,4 @@
-package me.fetsh.adventofcode2020.Day14;
+package me.fetsh.adventofcode2020.day14;
 
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;

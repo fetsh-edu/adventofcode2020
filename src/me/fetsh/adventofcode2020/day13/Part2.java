@@ -1,9 +1,8 @@
-package me.fetsh.adventofcode2020.Day13;
+package me.fetsh.adventofcode2020.day13;
 
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
-import java.util.Arrays;
 import java.util.stream.IntStream;
 import java.util.stream.Stream;
 

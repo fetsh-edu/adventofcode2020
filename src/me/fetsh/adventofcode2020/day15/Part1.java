@@ -1,4 +1,4 @@
-package me.fetsh.adventofcode2020.Day15;
+package me.fetsh.adventofcode2020.day15;
 
 public class Part1 {
     public static void main(String[] args) {
