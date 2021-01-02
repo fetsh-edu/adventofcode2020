@@ -1,4 +1,4 @@
-package me.fetsh.adventofcode2020.day7;
+package me.fetsh.adventofcode2020.day07;
 
 import java.io.IOException;
 import java.nio.file.Files;

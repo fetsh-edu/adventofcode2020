@@ -1,4 +1,4 @@
-package me.fetsh.adventofcode2020.day6;
+package me.fetsh.adventofcode2020.day06;
 
 import me.fetsh.adventofcode2020.utils.File;
 
